@@ -20,11 +20,11 @@ To try the other demos, simply replace that line 160 in main.py with the name of
 ## multi-threading_demo.html
 ![Screenshot 1](screenshot01.png)
 
-1. Echo Demo\
+1. Echo Demo
     - takes the input and sends it to python then back to javascript
-2. Multi-Threading Demo\
+2. Multi-Threading Demo
     - each click creates a task that runs for the input number of seconds in parallel with other running tasks
-3. Data Processing Demo\
+3. Data Processing Demo
     - takes the input and send it to python where it is validated or denied then sent back to javascript
 
 ## game_demo.html (pixel.js game)
