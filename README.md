@@ -15,7 +15,7 @@ This allows you to embed an HTML/JS frontend inside a PyQt6-based desktop app an
 # Examples:
 
 **main.py** will load **multi-threading_demo.html** by default.\
-To try the other demos, simply replace that line in main.py with the name of the desired demo file you wish to see.
+To try the other demos, simply replace that line 160 in main.py with the name of the desired demo file you wish to see.
 
 ## multi-threading_demo.html
 ![Screenshot 1](screenshot01.png)
