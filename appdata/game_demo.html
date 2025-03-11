@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Pixel.js Game</title>
+        <script src="qwebchannel.js"></script>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #000;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                overflow: hidden;
+            }
+            #game_container {
+                width: 800px;
+                height: 600px;
+                margin: 0 auto;
+                position: relative;
+                background-color: #333; /* Add visible background */
+                border: 1px solid #555;
+            }
+            #error_display {
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                color: red;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                background-color: rgba(0, 0, 0, 0.7);
+                padding: 5px;
+                border-radius: 3px;
+                display: none;
+            }
+            #notification {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 15px 30px;
+                border-radius: 5px;
+                font-family: Arial, sans-serif;
+                font-size: 24px;
+                font-weight: bold;
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
+                pointer-events: none;
+                z-index: 100;
+            }
+            #game_controls {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 10px;
+                gap: 10px;
+            }
+            .game-button {
+                background-color: #4CAF50;
+                border: none;
+                color: white;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+            .game-button:hover {
+                background-color: #45a049;
+            }
+        </style>
+        <script>
+            // Global error handler
+            window.onerror = function(message, source, lineno, colno, error) {
+                console.error('Error:', message, 'at', source, 'line', lineno);
+                var errorDisplay = document.getElementById('error_display');
+                if (errorDisplay) {
+                    errorDisplay.textContent = 'Error: ' + message;
+                    errorDisplay.style.display = 'block';
+                }
+                return true; // Prevents the default browser error handling
+            };
+        </script>
+    </head>
+    <body>
+        <div id="game_controls">
+            <button id="save_game" class="game-button">Save Game</button>
+            <button id="load_game" class="game-button">Load Game</button>
+        </div>
+        
+        <div id="game_container">
+            <div id="error_display"></div>
+            <div id="notification"></div>
+        </div>
+        
+        <!-- Load the Pixel.js engine -->
+        <script src="js/pixel.min.js"></script>
+        
+        <!-- Load the game script -->
+        <script src="js/game.js"></script>
+    </body>
+</html>

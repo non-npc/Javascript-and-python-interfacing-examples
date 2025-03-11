@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript and python interfacing examples</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: #1a1a1a;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #34495e;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .demo-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .output {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            min-height: 100px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        .task-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .task-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .loading {
+            color: #e67e22;
+        }
+
+        .success {
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Javascript and python interfacing examples</h1>
+        
+        <div class="demo-section">
+            <!-- Echo Demo -->
+            <div class="card">
+                <h2>Echo Demo</h2>
+                <input type="text" id="echoInput" placeholder="Enter a message">
+                <button onclick="sendEcho()">Send to Python</button>
+                <div class="output" id="echoOutput"></div>
+            </div>
+
+            <!-- Long Running Tasks Demo -->
+            <div class="card">
+                <h2>Multi-Threading Demo</h2>
+                <input type="number" id="taskDuration" value="2" min="1" max="10" step="0.5" placeholder="Duration (seconds)">
+                <button onclick="startTask()">Start Task</button>
+                <div class="task-list" id="taskList"></div>
+            </div>
+
+            <!-- Data Processing Demo -->
+            <div class="card">
+                <h2>Data Processing Demo</h2>
+                <textarea id="jsonInput" rows="4" placeholder="Enter JSON data to process"></textarea>
+                <button onclick="processData()">Process Data</button>
+                <div class="output" id="processOutput"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="qwebchannel.js"></script>
+    <script>
+        let bridge;
+        let taskCounter = 0;
+
+        // Initialize QWebChannel
+        new QWebChannel(qt.webChannelTransport, function(channel) {
+            bridge = channel.objects.bridge;
+            console.log("Bridge initialized!");
+
+            // Add task completion callback to the bridge object
+            bridge.taskCompleted = function(taskId, result) {
+                const taskItem = document.getElementById(taskId);
+                if (taskItem) {
+                    taskItem.textContent = result;
+                    taskItem.className = 'task-item success';
+                }
+            };
+        });
+
+        // Echo demo
+        async function sendEcho() {
+            const input = document.getElementById('echoInput');
+            const output = document.getElementById('echoOutput');
+            
+            try {
+                const response = await bridge.echo(input.value);
+                output.textContent = response;
+            } catch (error) {
+                output.textContent = "Error: " + error;
+            }
+        }
+
+        // Multi-threading demo
+        function startTask() {
+            const duration = parseFloat(document.getElementById('taskDuration').value);
+            const taskId = `task_${++taskCounter}`;
+            
+            // Add task to list
+            const taskList = document.getElementById('taskList');
+            const taskItem = document.createElement('div');
+            taskItem.id = taskId;
+            taskItem.className = 'task-item loading';
+            taskItem.textContent = `Task ${taskCounter} running...`;
+            taskList.appendChild(taskItem);
+
+            // Start the task
+            bridge.startLongTask(taskId, duration);
+        }
+
+        // Data processing demo
+        async function processData() {
+            const input = document.getElementById('jsonInput');
+            const output = document.getElementById('processOutput');
+            
+            try {
+                // Convert the input to a JSON string
+                const jsonStr = input.value;
+                const result = await bridge.processData(jsonStr);
+                // Parse the result back to an object for pretty printing
+                const resultObj = JSON.parse(result);
+                output.textContent = JSON.stringify(resultObj, null, 2);
+            } catch (error) {
+                output.textContent = "Error: " + error;
+            }
+        }
+
+        // Add example JSON data
+        document.getElementById('jsonInput').value = JSON.stringify({
+            name: "Test Data",
+            values: [1, 2, 3],
+            nested: {
+                key: "value"
+            }
+        }, null, 2);
+    </script>
+</body>
+</html> 
